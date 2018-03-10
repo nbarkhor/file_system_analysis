@@ -1,5 +1,7 @@
+#!/usr/bin/env python
 import csv
 import sys
+base_dir = sys.argv[1]
 
 superblock = []
 numBlocks=0
@@ -13,7 +15,7 @@ doubleindirects = []
 tripleindirects = []
 
 def populateArrays(filename):
-    with open(filename, newline='') as csvfile:
+    with open(filename) as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             global numBlocks, superblock, group, free_blocks, free_inodes, inodes, directories, indirects, doubleindirects, tripleindirects
@@ -57,6 +59,22 @@ def findInvalidBlocks():
             print ("INVALID TRIPLE INDIRECT BLOCK {0} IN INODE {1} AT OFFSET 65804".format(inode[26],inode[1]))
         elif int(inode[26])>0 and int(inode[26])<first_unreserved_block:
             print ("RESERVED TRIPLE INDIRECT BLOCK {0} IN INODE {1} AT OFFSET 65804".format(inode[26],inode[1]))
+    for indirect in indirects:
+        if int(indirect[5])<0 or int(indirect[5])>numBlocks:
+            print ("INVALID INDIRECT BLOCK {0} IN INODE {1} AT OFFSET {2}".format(indirect[5],indirect[1],indirect[3]))
+        elif int(indirect[5])>0 and int(indirect[5])<first_unreserved_block:
+            print ("RESERVED INDIRECT BLOCK {0} IN INODE {1} AT OFFSET {2}".format(indirect[5],indirect[1],indirect[3]))
+    for doubleindirect in doubleindirects:
+        if int(doubleindirect[5])<0 or int(doubleindirect[5])>numBlocks:
+            print ("INVALID DOUBLE INDIRECT BLOCK {0} IN INODE {1} AT OFFSET {2}".format(doubeindirect[5],doubleindirect[1,doubleindirect[3]]))
+        elif int(doubleindirect[5])>0 and int(doubleindirect[5])<first_unreserved_block:
+            print ("RESERVED DOUBLE INDIRECT BLOCK {0} IN INODE {1} AT OFFSET {2}".format(doubleindirect[5],doubleindirect[1],doubleindirect[3]))
+    for tripleindirect in tripleindirects:
+        if int(tripleindirect[5])<0 or int(tripleindirect[5])>numBlocks:
+            print ("INVALID TRIPLE INDIRECT BLOCK {0} IN INODE {1} AT OFFSET {2}".format(tripleindirect[5],tripleindirect[1],tripleindirect[3]))
+        elif int(tripleindirect[5])>0 and int(tripleindirect[5])<first_unreserved_block:
+            print ("RESERVED TRIPLE INDIRECT BLOCK {0} IN INODE {1} AT OFFSET {2}".format(tripleindirect[5],tripleindirect[1],tripleindirect[3]))
+
 
 
 if __name__ == "__main__":
